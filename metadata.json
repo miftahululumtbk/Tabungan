@@ -1,0 +1,8 @@
+{
+  "name": "Tabungan Siswa",
+  "description": "Sistem Manajemen Keuangan Tabungan Siswa sederhana berbasis Google Sheets dan Google Apps Script.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
