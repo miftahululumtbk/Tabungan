@@ -287,42 +287,42 @@ export const ReportPage = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50 print:bg-slate-100 border-b border-slate-100 print:border-slate-300">
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">No</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Tanggal</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Nama Siswa</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Jenis</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider text-right">Nominal</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Keterangan</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">No</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Tanggal</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Nama Siswa</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Jenis</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider text-right">Nominal</th>
+                <th className="px-4 md:px-6 py-4 text-xs font-bold text-slate-500 print:text-slate-900 uppercase tracking-wider">Keterangan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 print:divide-slate-300">
               {transactions.length > 0 ? (
                 transactions.map((tx, index) => (
                   <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 print:text-slate-600">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-slate-400 print:text-slate-600">
                       {index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                       {formatDateShort(tx.tanggal)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-900">
+                    <td className="px-4 md:px-6 py-4 font-bold text-slate-900 print:text-sm">
                       {tx.namaSiswa}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <span className={cn(
-                        "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase print:bg-transparent print:border",
+                        "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase print:bg-transparent print:border print:px-1",
                         tx.jenis === 'SETORAN' ? "bg-emerald-50 text-emerald-700 print:border-emerald-200" : "bg-orange-50 text-orange-700 print:border-orange-200"
                       )}>
                         {tx.jenis}
                       </span>
                     </td>
                     <td className={cn(
-                      "px-6 py-4 whitespace-nowrap text-sm font-bold text-right",
+                      "px-4 md:px-6 py-4 whitespace-nowrap text-sm font-bold text-right print:text-base",
                       tx.jenis === 'SETORAN' ? "text-emerald-600" : "text-orange-600"
                     )}>
                       {formatRupiah(tx.nominal)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-400 italic print:text-slate-500">
+                    <td className="px-4 md:px-6 py-4 text-xs text-slate-400 italic print:text-slate-500 print:whitespace-normal min-w-[100px]">
                       {tx.keterangan || '-'}
                     </td>
                   </tr>
