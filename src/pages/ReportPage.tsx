@@ -142,10 +142,10 @@ export const ReportPage = () => {
           <h2 className="text-2xl font-bold text-slate-900">Laporan Keuangan</h2>
           <p className="text-slate-500">Generate laporan tabungan berdasarkan filter tertentu.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
           <button 
             onClick={handlePrint}
-            className="flex-1 md:flex-none border border-slate-200 bg-white text-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 font-bold"
+            className="border border-slate-200 bg-white text-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 font-bold"
           >
             <Printer size={20} />
             Cetak
@@ -153,15 +153,15 @@ export const ReportPage = () => {
           <button 
             onClick={handleExportCSV}
             disabled={transactions.length === 0}
-            className="flex-1 md:flex-none border border-slate-200 bg-white text-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 font-bold disabled:opacity-50"
+            className="border border-slate-200 bg-white text-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 font-bold disabled:opacity-50"
           >
             <Download size={20} />
-            Export CSV
+            Export
           </button>
           <button 
             onClick={handleShareReportGroup}
             disabled={transactions.length === 0}
-            className="flex-1 md:flex-none bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 font-bold disabled:opacity-50 shadow-lg shadow-emerald-100"
+            className="col-span-2 md:col-span-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 font-bold disabled:opacity-50 shadow-lg shadow-emerald-100"
           >
             <Share2 size={20} />
             Share Grup

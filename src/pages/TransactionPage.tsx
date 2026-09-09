@@ -455,11 +455,11 @@ export const TransactionPage = () => {
           <h2 className="text-2xl font-bold text-slate-900">Transaksi Tabungan</h2>
           <p className="text-slate-500">Catat setoran dan penarikan tabungan siswa.</p>
         </div>
-        <div className="flex gap-2">
-          <div className="relative">
+        <div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
+          <div className="relative w-full md:w-auto">
             <button 
               onClick={() => setIsImportMenuOpen(!isImportMenuOpen)}
-              className="h-full bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 font-bold border border-blue-200"
+              className="w-full h-full bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 font-bold border border-blue-200"
             >
               <Upload size={20} />
               Import
@@ -499,24 +499,24 @@ export const TransactionPage = () => {
           </div>
           <button 
             onClick={() => setIsBulkModalOpen(true)}
-            className="flex-1 md:flex-none bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 font-bold border border-blue-200"
+            className="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 font-bold border border-blue-200"
           >
             <ListPlus size={20} />
-            Setoran Massal
+            Massal
           </button>
           <button 
             onClick={() => handleOpenModal('SETORAN')}
-            className="flex-1 md:flex-none bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-emerald-100"
+            className="bg-emerald-600 text-white px-4 md:px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-emerald-100"
           >
             <Plus size={20} />
             Setoran
           </button>
           <button 
             onClick={() => handleOpenModal('PENARIKAN')}
-            className="flex-1 md:flex-none bg-orange-600 text-white px-6 py-2.5 rounded-xl hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-orange-100"
+            className="bg-orange-600 text-white px-4 md:px-6 py-2.5 rounded-xl hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-orange-100"
           >
             <ArrowLeftRight size={20} />
-            Penarikan
+            Tarik
           </button>
         </div>
       </div>

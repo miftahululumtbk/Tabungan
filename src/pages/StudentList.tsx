@@ -239,7 +239,7 @@ export const StudentList = () => {
           <h2 className="text-2xl font-bold text-slate-900">Data Siswa</h2>
           <p className="text-slate-500">Kelola informasi data diri siswa dan orang tua.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
           <button 
             onClick={handleDownloadTemplate}
             className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 font-bold border border-slate-200"
@@ -253,11 +253,11 @@ export const StudentList = () => {
             className="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 font-bold border border-blue-200"
           >
             <Upload size={20} />
-            Upload Data
+            Upload
           </button>
           <button 
             onClick={handleAddSiswa}
-            className="bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-blue-100"
+            className="col-span-2 md:col-span-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg shadow-blue-100"
           >
             <Plus size={20} />
             Tambah Siswa
