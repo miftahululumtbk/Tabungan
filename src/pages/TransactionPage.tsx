@@ -46,6 +46,7 @@ export const TransactionPage = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isImportMenuOpen, setIsImportMenuOpen] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [selectedClassForSingle, setSelectedClassForSingle] = useState('');
 
   const [formData, setFormData] = useState({
     id: '',
@@ -88,12 +89,14 @@ export const TransactionPage = () => {
       keterangan: '',
       tanggal: new Date().toISOString().split('T')[0],
     });
+    setSelectedClassForSingle('');
     setSuccessData(null);
     setModalError(null);
     setIsModalOpen(true);
   };
 
   const handleEditTransaction = (tx: Transaction) => {
+    const student = students.find(s => s.id === tx.idSiswa);
     setFormData({
       id: tx.id,
       idSiswa: tx.idSiswa,
@@ -102,6 +105,7 @@ export const TransactionPage = () => {
       nominal: tx.nominal.toString(),
       keterangan: tx.keterangan || ''
     });
+    setSelectedClassForSingle(student?.kelas || '');
     setSuccessData(null);
     setModalError(null);
     setIsModalOpen(true);
@@ -779,10 +783,31 @@ export const TransactionPage = () => {
                       <input 
                         type="date" 
                         required
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold"
                         value={formData.tanggal}
                         onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })}
                       />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-slate-700">Pilih Kelas</label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <select 
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-bold text-slate-700"
+                        value={selectedClassForSingle}
+                        onChange={(e) => {
+                          setSelectedClassForSingle(e.target.value);
+                          setFormData({ ...formData, idSiswa: '' });
+                        }}
+                      >
+                        <option value="">-- Semua Kelas --</option>
+                        {classes.map(c => (
+                          <option key={c} value={c}>Kelas {c}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
                     </div>
                   </div>
 
@@ -792,15 +817,19 @@ export const TransactionPage = () => {
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <select 
                         required
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-bold text-slate-700"
                         value={formData.idSiswa}
                         onChange={(e) => setFormData({ ...formData, idSiswa: e.target.value })}
                       >
                         <option value="">-- Pilih Siswa --</option>
-                        {students.map(s => (
-                          <option key={s.id} value={s.id}>{s.nama} ({s.kelas})</option>
-                        ))}
+                        {students
+                          .filter(s => !selectedClassForSingle || s.kelas === selectedClassForSingle)
+                          .map(s => (
+                            <option key={s.id} value={s.id}>{s.nama} ({s.kelas})</option>
+                          ))
+                        }
                       </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
                     </div>
                   </div>
 
@@ -911,8 +940,8 @@ export const TransactionPage = () => {
       {/* Modal Setoran Massal */}
       {isBulkModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
               <h3 className="font-bold text-slate-900 flex items-center gap-2">
                 <ListPlus className="text-blue-600" size={20} /> Setoran Massal
               </h3>
@@ -924,40 +953,41 @@ export const TransactionPage = () => {
               </button>
             </div>
             
-            <div className="p-6 border-b border-slate-100 bg-white space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Pilih Kelas</label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <select 
-                      className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-bold text-slate-700"
-                      value={bulkClass}
-                      onChange={(e) => setBulkClass(e.target.value)}
-                    >
-                      <option value="">-- Pilih Kelas --</option>
-                      {classes.map(c => (
-                        <option key={c} value={c}>Kelas {c}</option>
-                      ))}
-                    </select>
+            <div className="flex-1 overflow-y-auto bg-slate-50/30">
+              <div className="p-6 border-b border-slate-100 bg-white space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase">Pilih Kelas</label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <select 
+                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-bold text-slate-700"
+                        value={bulkClass}
+                        onChange={(e) => setBulkClass(e.target.value)}
+                      >
+                        <option value="">-- Pilih Kelas --</option>
+                        {classes.map(c => (
+                          <option key={c} value={c}>Kelas {c}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Tanggal Transaksi</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input 
-                      type="date" 
-                      className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700"
-                      value={bulkDate}
-                      onChange={(e) => setBulkDate(e.target.value)}
-                    />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase">Tanggal Transaksi</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <input 
+                        type="date" 
+                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700"
+                        value={bulkDate}
+                        onChange={(e) => setBulkDate(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex-1 overflow-y-auto p-0">
               {!bulkClass ? (
                 <div className="py-20 text-center space-y-3">
                   <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto">
@@ -999,7 +1029,7 @@ export const TransactionPage = () => {
               )}
             </div>
 
-            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex flex-col gap-3">
+            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex flex-col gap-3 shrink-0">
               {modalError && (
                 <div className="bg-red-50 p-3 rounded-xl flex items-start gap-3 text-red-700 text-xs">
                   <AlertCircle size={16} className="shrink-0 mt-0.5" />
