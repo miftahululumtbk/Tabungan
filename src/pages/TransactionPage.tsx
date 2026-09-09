@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { Student, Transaction, TransactionType } from '../types';
-import { formatRupiah, formatDateShort, generateWhatsAppLink, generateWhatsAppGroupLink, cn } from '../utils/format';
+import { formatRupiah, formatDateShort, generateWhatsAppLink, generateWhatsAppGroupLink, cn, getLocalDateISO } from '../utils/format';
 import Papa from 'papaparse';
 
 export const TransactionPage = () => {
@@ -40,7 +40,7 @@ export const TransactionPage = () => {
   const [bulkSuccessTransactions, setBulkSuccessTransactions] = useState<any[]>([]);
   const [bulkData, setBulkData] = useState<{ [key: string]: string }>({});
   const [bulkClass, setBulkClass] = useState('');
-  const [bulkDate, setBulkDate] = useState(new Date().toISOString().split('T')[0]);
+  const [bulkDate, setBulkDate] = useState(getLocalDateISO());
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -51,7 +51,7 @@ export const TransactionPage = () => {
   const [formData, setFormData] = useState({
     id: '',
     idSiswa: '',
-    tanggal: new Date().toISOString().split('T')[0],
+    tanggal: getLocalDateISO(),
     jenis: 'SETORAN' as TransactionType,
     nominal: '',
     keterangan: ''
@@ -87,7 +87,7 @@ export const TransactionPage = () => {
       jenis: type,
       nominal: '',
       keterangan: '',
-      tanggal: new Date().toISOString().split('T')[0],
+      tanggal: getLocalDateISO(),
     });
     setSelectedClassForSingle('');
     setSuccessData(null);

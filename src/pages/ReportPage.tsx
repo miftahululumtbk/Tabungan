@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { Student, Transaction } from '../types';
-import { formatRupiah, formatDateShort, generateWhatsAppGroupLink, cn } from '../utils/format';
+import { formatRupiah, formatDateShort, generateWhatsAppGroupLink, cn, getLocalDateISO } from '../utils/format';
+import Papa from 'papaparse';
 
 export const ReportPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
@@ -93,30 +94,25 @@ export const ReportPage = () => {
   const handleExportCSV = () => {
     if (transactions.length === 0) return;
 
-    const headers = ['No', 'Tanggal', 'Nama Siswa', 'Kelas', 'Jenis', 'Nominal', 'Keterangan'];
-    const rows = transactions.map((tx, idx) => {
+    const dataToExport = transactions.map((tx, idx) => {
       const student = students.find(s => s.id === tx.idSiswa);
-      return [
-        idx + 1,
-        formatDateShort(tx.tanggal),
-        tx.namaSiswa,
-        student?.kelas || '-',
-        tx.jenis,
-        tx.nominal,
-        tx.keterangan || ''
-      ];
+      return {
+        'No': idx + 1,
+        'Tanggal': formatDateShort(tx.tanggal),
+        'Nama Siswa': tx.namaSiswa,
+        'Kelas': student?.kelas || '-',
+        'Jenis': tx.jenis,
+        'Nominal': tx.nominal,
+        'Keterangan': tx.keterangan || ''
+      };
     });
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `Laporan_Tabungan_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Laporan_Tabungan_${getLocalDateISO()}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
