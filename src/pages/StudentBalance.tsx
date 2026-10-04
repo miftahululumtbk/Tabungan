@@ -9,7 +9,9 @@ import {
   MessageCircle,
   FileText,
   Printer,
-  History
+  History,
+  Filter,
+  Users
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { Student, StudentBalance as IStudentBalance, Transaction } from '../types';
@@ -19,6 +21,7 @@ export const StudentBalance = () => {
   const [balances, setBalances] = useState<IStudentBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterKelas, setFilterKelas] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [studentDetail, setStudentDetail] = useState<{ student: Student; balance: IStudentBalance; history: Transaction[] } | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -56,9 +59,14 @@ export const StudentBalance = () => {
     }
   };
 
-  const filteredBalances = balances.filter(b => 
-    b.namaSiswa.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBalances = balances.filter(b => {
+    const matchesSearch = b.namaSiswa.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          b.idSiswa.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesKelas = !filterKelas || b.kelas === filterKelas;
+    return matchesSearch && matchesKelas;
+  });
+
+  const classes = Array.from(new Set(balances.map(b => b.kelas))).sort();
 
   if (selectedStudentId && studentDetail) {
     return (
@@ -210,16 +218,32 @@ export const StudentBalance = () => {
         <p className="text-slate-500">Pantau akumulasi saldo dan riwayat detail masing-masing siswa.</p>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="relative">
+      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
-            placeholder="Cari siswa berdasarkan nama..."
+            placeholder="Cari siswa berdasarkan nama atau ID..."
             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div className="relative w-full md:w-64">
+          <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <select 
+            className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-medium text-slate-700"
+            value={filterKelas}
+            onChange={(e) => setFilterKelas(e.target.value)}
+          >
+            <option value="">Semua Kelas</option>
+            {classes.map(c => (
+              <option key={c} value={c}>Kelas {c}</option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <Filter size={18} />
+          </div>
         </div>
       </div>
 
