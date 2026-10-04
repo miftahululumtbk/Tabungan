@@ -20,7 +20,9 @@ import {
   Upload,
   Download,
   FileSpreadsheet,
-  ChevronDown
+  ChevronDown,
+  TrendingUp,
+  TrendingDown
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { Student, Transaction, TransactionType } from '../types';
@@ -47,6 +49,7 @@ export const TransactionPage = () => {
   const [isImportMenuOpen, setIsImportMenuOpen] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [selectedClassForSingle, setSelectedClassForSingle] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     id: '',
@@ -112,10 +115,17 @@ export const TransactionPage = () => {
   };
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [txToDelete, setTxToDelete] = useState<string | null>(null);
+  const [txToDelete, setTxToDelete] = useState<string | string[] | null>(null);
 
   const handleDeleteTransaction = (id: string) => {
     setTxToDelete(id);
+    setModalError(null);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    setTxToDelete(selectedIds);
     setModalError(null);
     setIsDeleteModalOpen(true);
   };
@@ -126,9 +136,16 @@ export const TransactionPage = () => {
     setLoading(true);
     setModalError(null);
     try {
-      const response = await apiService.deleteTransaction(txToDelete);
+      let response;
+      if (Array.isArray(txToDelete)) {
+        response = await apiService.deleteBulkTransactions(txToDelete);
+      } else {
+        response = await apiService.deleteTransaction(txToDelete);
+      }
+      
       if (response.success) {
         setIsDeleteModalOpen(false);
+        setSelectedIds([]);
         fetchData();
       } else {
         setModalError(response.message);
@@ -452,6 +469,20 @@ export const TransactionPage = () => {
     return matchesSearch && matchesStartDate && matchesEndDate;
   });
 
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(filteredTransactions.map(tx => tx.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -527,15 +558,26 @@ export const TransactionPage = () => {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Cari transaksi berdasarkan nama siswa..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Cari transaksi berdasarkan nama siswa..."
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          {selectedIds.length > 0 && (
+            <button 
+              onClick={handleBulkDelete}
+              className="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-xl font-bold hover:bg-red-100 transition-all flex items-center justify-center gap-2 animate-in slide-in-from-right-4 duration-200"
+            >
+              <Trash2 size={20} />
+              Hapus ({selectedIds.length})
+            </button>
+          )}
         </div>
         
         <div className="flex flex-col md:flex-row gap-4 items-end">
@@ -596,6 +638,14 @@ export const TransactionPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100 border-b border-slate-200">
+                  <th className="px-4 py-2 w-10 text-center border-r border-slate-200">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      checked={filteredTransactions.length > 0 && selectedIds.length === filteredTransactions.length}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
                   <th className="px-4 py-2 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-r border-slate-200">Tanggal</th>
                   <th className="px-4 py-2 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-r border-slate-200">Nama Siswa / ID</th>
                   <th className="px-4 py-2 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-r border-slate-200">Jenis</th>
@@ -607,7 +657,18 @@ export const TransactionPage = () => {
               <tbody className="divide-y divide-slate-200">
                 {filteredTransactions.length > 0 ? (
                   filteredTransactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-blue-50/30 transition-colors group">
+                    <tr key={tx.id} className={cn(
+                      "hover:bg-blue-50/30 transition-colors group",
+                      selectedIds.includes(tx.id) && "bg-blue-50"
+                    )}>
+                      <td className="px-4 py-2 text-center border-r border-slate-100">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          checked={selectedIds.includes(tx.id)}
+                          onChange={() => handleToggleSelect(tx.id)}
+                        />
+                      </td>
                       <td className="px-4 py-2 whitespace-nowrap text-xs text-slate-600 border-r border-slate-100">
                         {formatDateShort(tx.tanggal)}
                       </td>
@@ -906,9 +967,14 @@ export const TransactionPage = () => {
               <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mb-4">
                 <Trash2 size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Hapus Transaksi?</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {Array.isArray(txToDelete) ? `Hapus ${txToDelete.length} Transaksi?` : 'Hapus Transaksi?'}
+              </h3>
               <p className="text-slate-500 mb-6">
-                Tindakan ini akan menghapus data transaksi dan mengembalikan saldo siswa ke nilai sebelumnya.
+                {Array.isArray(txToDelete) 
+                  ? `Tindakan ini akan menghapus ${txToDelete.length} data transaksi terpilih secara permanen.`
+                  : 'Tindakan ini akan menghapus data transaksi dan mengembalikan saldo siswa ke nilai sebelumnya.'
+                }
               </p>
 
               {modalError && (

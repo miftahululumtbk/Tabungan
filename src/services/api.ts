@@ -86,6 +86,7 @@ export const apiService = {
   addBulkTransactions: (transactions: any[]) => postRequest<{ count: number }>('addBulkTransactions', { transactions }),
   updateTransaction: (id: string, transaction: Partial<Transaction>) => postRequest<void>('updateTransaction', { id, ...transaction }),
   deleteTransaction: (id: string) => postRequest<void>('deleteTransaction', { id }),
+  deleteBulkTransactions: (ids: string[]) => postRequest<{ count: number }>('deleteBulkTransactions', { ids }),
   
   // Balances
   getBalances: () => request<StudentBalance[]>('getBalances'),

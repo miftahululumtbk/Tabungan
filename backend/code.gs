@@ -70,7 +70,7 @@ function doPost(e) {
     
     // Prioritaskan action dari body jika ada
     if (data && data.action) {
-      action = data.action;
+      action = typeof data.action === 'string' ? data.action.trim() : data.action;
     }
   } catch (err) {
     // Jika JSON gagal, coba gunakan parameter URL sebagai data
@@ -108,6 +108,9 @@ function doPost(e) {
         break;
       case 'deleteTransaction':
         result = deleteTransaction(data.id);
+        break;
+      case 'deleteBulkTransactions':
+        result = deleteBulkTransactions(data.ids);
         break;
       case 'backupData':
         result = backupData();
@@ -466,6 +469,27 @@ function deleteTransaction(id) {
     }
   }
   throw new Error('Transaksi tidak ditemukan');
+}
+
+function deleteBulkTransactions(ids) {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    throw new Error('Tidak ada ID transaksi yang dipilih');
+  }
+
+  const sheet = SS.getSheetByName(SHEETS.TRANSAKSI);
+  let rows = sheet.getDataRange().getValues();
+  let deletedCount = 0;
+
+  // We loop backwards to avoid row index shifting issues when deleting
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (ids.indexOf(rows[i][0]) !== -1) {
+      sheet.deleteRow(i + 1);
+      deletedCount++;
+    }
+  }
+
+  logAction('DELETE_BULK_TRANSACTIONS', deletedCount, `Hapus ${deletedCount} transaksi massal`);
+  return { count: deletedCount };
 }
 
 function getReports(params) {
